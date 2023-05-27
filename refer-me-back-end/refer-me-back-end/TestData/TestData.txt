@@ -1,0 +1,27 @@
+// User
+{
+  "company": "randomcomp",
+  "dateOfBirth": "1999-09-19",
+  "gender": "male",
+  "gmail": "avinash.kunwar@gmail.com",
+  "password": "blablabla",
+  "profilePic": "profile pic",
+  "resume": "adarsh's Resume",
+  "userId": "185aab2f-10a1-4f53-bb79-bba0a7f53959",
+  "userName": "snehu"
+}
+
+// JobPosts
+{
+  "postId": "eqweqweqwe",
+  "referType": 0,
+  "user_id": "qreqweqwe",
+  "jobId": "eqweqweqwe",
+  "jobDescription": "good job",
+  "joblink": "link",
+  "forCompany": "google",
+  "roleName": "sde",
+  "jobType": "full time",
+  "experienceRequired": 1,
+  "jobLocationCountry": "germany"
+}
