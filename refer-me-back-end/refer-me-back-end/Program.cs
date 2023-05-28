@@ -19,10 +19,10 @@ async Task<UserCosmosDbService> InitializeUsersCosmosClientInstanceAsync(IConfig
     var account = configurationSection["Account"];
 
     // Using key vault to get Users Table Key
-    //var secretClient = new SecretClient(vaultUri: new Uri("https://rg-refer-me-kv.vault.azure.net/"), credential: new DefaultAzureCredential());
-    //var secretKey = secretClient.GetSecret("ReferMeDB-Users-Key");
-    //var key = secretKey.Value.Value;
-    var key = configurationSection["Key"];
+    var secretClient = new SecretClient(vaultUri: new Uri("https://rg-refer-me-kv.vault.azure.net/"), credential: new DefaultAzureCredential());
+    var secretKey = secretClient.GetSecret("ReferMeDB-Users-Key");
+    var key = secretKey.Value.Value;
+    //var key = configurationSection["Key"];
     var client = new CosmosClient(account, key);
     var database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
     await database.Database.CreateContainerIfNotExistsAsync(containerName, "/id");
@@ -37,11 +37,11 @@ async Task<JobPostsCosmosDbService> InitializeJobPostsCosmosClientInstanceAsync(
     var account = configurationSection["Account"];
 
     // Using key vault to get JobPosts Table Key
-    //var secretClient = new SecretClient(vaultUri: new Uri("https://rg-refer-me-kv.vault.azure.net/"), credential: new DefaultAzureCredential());
-    //var secretKey = secretClient.GetSecret("ReferMeDB-JobPosts-Key");
-    //var key = secretKey.Value.Value;
+    var secretClient = new SecretClient(vaultUri: new Uri("https://rg-refer-me-kv.vault.azure.net/"), credential: new DefaultAzureCredential());
+    var secretKey = secretClient.GetSecret("ReferMeDB-JobPosts-Key");
+    var key = secretKey.Value.Value;
 
-    var key = configurationSection["Key"];
+    //var key = configurationSection["Key"];
     var client = new CosmosClient(account, key);
     var database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
     await database.Database.CreateContainerIfNotExistsAsync(containerName, "/id");
@@ -68,11 +68,10 @@ builder.Services.AddAuthentication(
                 }).AddJwtBearer(jwtOptions =>
                 {
                     // Using key vault to get JwtConfig Key
-                    //var secretClient = new SecretClient(vaultUri: new Uri("https://rg-refer-me-kv.vault.azure.net/"), credential: new DefaultAzureCredential());
-                    //var secretKey = secretClient.GetSecretAsync("JwtConfig-Key").Result;
-                    //var key = _configuration.GetValue<string>("JwtConfig:Key");
-                    //var key = secretKey.Value.Value;
-                    var key = builder.Configuration.GetValue<string>("JwtConfig:Key");
+                    var secretClient = new SecretClient(vaultUri: new Uri("https://rg-refer-me-kv.vault.azure.net/"), credential: new DefaultAzureCredential());
+                    var secretKey = secretClient.GetSecretAsync("JwtConfig-Key").Result;
+                    var key = secretKey.Value.Value;
+                    //var key = builder.Configuration.GetValue<string>("JwtConfig:Key");
                     var keyBytes = Encoding.ASCII.GetBytes(key);
                     jwtOptions.SaveToken = true;
                     jwtOptions.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters

@@ -1,4 +1,6 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
@@ -31,7 +33,11 @@ namespace refer_me_back_end.Services.JWTAuthService
             if (response == HttpStatusCode.NotFound)
                 return Task.FromResult("Username not found");
 
-            var key = _configuration.GetValue<string>("JwtConfig:Key");
+            // Using key vault to get JwtConfig Key
+            var secretClient = new SecretClient(vaultUri: new Uri("https://rg-refer-me-kv.vault.azure.net/"), credential: new DefaultAzureCredential());
+            var secretKey = secretClient.GetSecretAsync("JwtConfig-Key").Result;
+            var key = secretKey.Value.Value;
+            //var key = _configuration.GetValue<string>("JwtConfig:Key");
             var keyBytes = Encoding.ASCII.GetBytes(key);
 
             var tokenHandler = new JwtSecurityTokenHandler();
