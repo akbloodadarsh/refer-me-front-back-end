@@ -23,18 +23,18 @@ namespace refer_me_back_end.Repositories
         private readonly IUserCosmosDbService _userCosmosDbService;
         private IEnumerable<User> users;
         private IJwtTokenManager _jwtTokenManager;
-        //private IDistributedCache _cache;
-        //public UserRepositories(IUserCosmosDbService usersCosmosDbService, IJwtTokenManager jwtTokenManager, IDistributedCache cache)
-        //{
-        //    _usersCosmosDbService = usersCosmosDbService;
-        //    _jwtTokenManager = jwtTokenManager;
-        //    _cache = cache;
-        //}
-        public UserRepository(IUserCosmosDbService userCosmosDbService, IJwtTokenManager jwtTokenManager)
+        private IDistributedCache _cache;
+        public UserRepository(IUserCosmosDbService usersCosmosDbService, IJwtTokenManager jwtTokenManager, IDistributedCache cache)
         {
-            _userCosmosDbService = userCosmosDbService;
+            _userCosmosDbService = usersCosmosDbService;
             _jwtTokenManager = jwtTokenManager;
+            _cache = cache;
         }
+        //public UserRepository(IUserCosmosDbService userCosmosDbService, IJwtTokenManager jwtTokenManager)
+        //{
+        //    _userCosmosDbService = userCosmosDbService;
+        //    _jwtTokenManager = jwtTokenManager;
+        //}
 
         // For deleting user
         public async Task<ActionResult<string>> DeleteUser(string userId)
@@ -53,32 +53,32 @@ namespace refer_me_back_end.Repositories
         // For getting all users info
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            //var cache_users = _cache.GetString("all_users_list");
-            //if (cache_users == null)
-            //{
-            users = await _userCosmosDbService.GetUsers();
-                return users.ToList<User>();
-            //    _cache.SetString("all_users_list", JsonConvert.SerializeObject(users));
-            //}
-            //else
-            //{
-                //users = JsonConvert.DeserializeObject<IEnumerable<User>>(cache_users);
-            //}
-            //return users.ToList();
+            var cache_users = _cache.GetString("all_users_list");
+            if (cache_users == null)
+            {
+                users = await _userCosmosDbService.GetUsers();
+                //return users.ToList<User>();
+                _cache.SetString("all_users_list", JsonConvert.SerializeObject(users));
+            }
+            else
+            {
+                users = JsonConvert.DeserializeObject<IEnumerable<User>>(cache_users);
+            }
+            return users.ToList();
         }
 
         // For getting single user info
         public async Task<ActionResult<User>> GetUser(string userId)
         {
-            //var user_data = _cache.GetString(user_id);
-            //if (user_data == null)
-            //{
+            var user_data = _cache.GetString(userId);
+            if (user_data == null)
+            {
                 var user = await _userCosmosDbService.GetUserAsync(userId);
-            return user;
-            //_cache.SetString(user_id, JsonConvert.SerializeObject(user));
-            //}
+                //return user;
+                _cache.SetString(userId, JsonConvert.SerializeObject(user));
+            }
 
-            //return JsonConvert.DeserializeObject<User>(user_data);
+            return JsonConvert.DeserializeObject<User>(user_data);
         }
 
         // For Adding User

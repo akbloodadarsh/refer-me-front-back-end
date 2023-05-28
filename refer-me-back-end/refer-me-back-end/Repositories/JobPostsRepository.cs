@@ -20,16 +20,16 @@ namespace refer_me_back_end.Repositories
     {
         private readonly IJobPostsCosmosDbService _jobPostsCosmosDbService;
         private IEnumerable<JobPost> jobPosts;
-        //private IDistributedCache _cache;
-        //public JobPostsRepositories(IJobPostsCosmosDbService jobPostsCosmosDbService, IDistributedCache cache)
-        //{
-        //    _jobPostsCosmosDbService = jobPostsCosmosDbService;
-        //    _cache = cache;
-        //}
-        public JobPostsRepositories(IJobPostsCosmosDbService jobPostsCosmosDbService)
+        private IDistributedCache _cache;
+        public JobPostsRepositories(IJobPostsCosmosDbService jobPostsCosmosDbService, IDistributedCache cache)
         {
             _jobPostsCosmosDbService = jobPostsCosmosDbService;
+            _cache = cache;
         }
+        //public JobPostsRepositories(IJobPostsCosmosDbService jobPostsCosmosDbService)
+        //{
+        //    _jobPostsCosmosDbService = jobPostsCosmosDbService;
+        //}
 
         // For deleting jobPost
         public async Task<ActionResult<string>> DeleteJobPost(string jobPostId)
@@ -48,32 +48,32 @@ namespace refer_me_back_end.Repositories
         // For getting all jobPosts info
         public async Task<ActionResult<IEnumerable<JobPost>>> GetJobPosts()
         {
-            //var cache_job_posts = _cache.GetString("all_posts_list");
-            //if (cache_job_posts == null)
-            //{
+            var cache_job_posts = _cache.GetString("all_posts_list");
+            if (cache_job_posts == null)
+            {
                 jobPosts = await _jobPostsCosmosDbService.GetJobPosts();
-            return jobPosts.ToList<JobPost>();
-                //_cache.SetString("all_posts_list", JsonConvert.SerializeObject(jobPosts));
-            //}
-            //else
-            //{
-            //    jobPosts = JsonConvert.DeserializeObject<IEnumerable<JobPost>>(cache_job_posts);
-            //}
+                //return jobPosts.ToList<JobPost>();
+                _cache.SetString("all_posts_list", JsonConvert.SerializeObject(jobPosts));
+            }
+            else
+            {
+                jobPosts = JsonConvert.DeserializeObject<IEnumerable<JobPost>>(cache_job_posts);
+            }
 
-            //return jobPosts.ToList();
+            return jobPosts.ToList();
         }
 
         // For getting single jobPost info
         public async Task<ActionResult<JobPost>> GetJobPost(string jobPostId)
         {
-            //var job_post_data = _cache.GetString(jobPostId);
-            //if (job_post_data == null)
-            //{
+            var job_post_data = _cache.GetString(jobPostId);
+            if (job_post_data == null)
+            {
                 var job_post = await _jobPostsCosmosDbService.GetJobPostAsync(jobPostId);
-                //_cache.SetString(jobPostId, JsonConvert.SerializeObject(job_post));
-                return job_post;
-            //}
-            //return JsonConvert.DeserializeObject<JobPost>(job_post_data);
+                _cache.SetString(jobPostId, JsonConvert.SerializeObject(job_post));
+                //return job_post;
+            }
+            return JsonConvert.DeserializeObject<JobPost>(job_post_data);
         }
 
         // For Adding JobPost
