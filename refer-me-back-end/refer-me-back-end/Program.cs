@@ -139,6 +139,16 @@ builder.Services.AddSwaggerGen();
 // Adding DBContext
 builder.Services.AddDbContext<ReferMeDBContext>();
 
+// Adding Redis Cache
+builder.Services.AddDistributedRedisCache(options =>
+{
+    var secretClient = new SecretClient(vaultUri: new Uri("https://rg-refer-me-kv.vault.azure.net/"), credential: new DefaultAzureCredential());
+    var secretKey = secretClient.GetSecret("ReferMe-Redis-Cache-Key");
+    var connectionString = secretKey.Value.Value;
+
+    options.Configuration = connectionString;
+});
+
 var app = builder.Build();
 
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
