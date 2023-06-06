@@ -37,7 +37,6 @@ namespace refer_me_back_end.Services.JWTAuthService
             var secretClient = new SecretClient(vaultUri: new Uri("https://rg-refer-me-kv.vault.azure.net/"), credential: new DefaultAzureCredential());
             var secretKey = secretClient.GetSecretAsync("JwtConfig-Key").Result;
             var key = secretKey.Value.Value;
-            //var key = _configuration.GetValue<string>("JwtConfig:Key");
             var keyBytes = Encoding.ASCII.GetBytes(key);
 
             var tokenHandler = new JwtSecurityTokenHandler();

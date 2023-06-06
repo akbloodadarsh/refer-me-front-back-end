@@ -30,11 +30,6 @@ namespace refer_me_back_end.Repositories
             _jwtTokenManager = jwtTokenManager;
             _cache = cache;
         }
-        //public UserRepository(IUserCosmosDbService userCosmosDbService, IJwtTokenManager jwtTokenManager)
-        //{
-        //    _userCosmosDbService = userCosmosDbService;
-        //    _jwtTokenManager = jwtTokenManager;
-        //}
 
         // For deleting user
         public async Task<ActionResult<string>> DeleteUser(string userId)
@@ -57,7 +52,6 @@ namespace refer_me_back_end.Repositories
             if (cache_users == null)
             {
                 users = await _userCosmosDbService.GetUsers();
-                //return users.ToList<User>();
                 _cache.SetString("all_users_list", JsonConvert.SerializeObject(users));
             }
             else
@@ -74,7 +68,6 @@ namespace refer_me_back_end.Repositories
             if (user_data == null)
             {
                 var user = await _userCosmosDbService.GetUserAsync(userId);
-                //return user;
                 _cache.SetString(userId, JsonConvert.SerializeObject(user));
             }
 

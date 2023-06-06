@@ -26,10 +26,6 @@ namespace refer_me_back_end.Repositories
             _jobPostsCosmosDbService = jobPostsCosmosDbService;
             _cache = cache;
         }
-        //public JobPostsRepositories(IJobPostsCosmosDbService jobPostsCosmosDbService)
-        //{
-        //    _jobPostsCosmosDbService = jobPostsCosmosDbService;
-        //}
 
         // For deleting jobPost
         public async Task<ActionResult<string>> DeleteJobPost(string jobPostId)
@@ -52,7 +48,6 @@ namespace refer_me_back_end.Repositories
             if (cache_job_posts == null)
             {
                 jobPosts = await _jobPostsCosmosDbService.GetJobPosts();
-                //return jobPosts.ToList<JobPost>();
                 _cache.SetString("all_posts_list", JsonConvert.SerializeObject(jobPosts));
             }
             else
@@ -71,7 +66,6 @@ namespace refer_me_back_end.Repositories
             {
                 var job_post = await _jobPostsCosmosDbService.GetJobPostAsync(jobPostId);
                 _cache.SetString(jobPostId, JsonConvert.SerializeObject(job_post));
-                //return job_post;
             }
             return JsonConvert.DeserializeObject<JobPost>(job_post_data);
         }

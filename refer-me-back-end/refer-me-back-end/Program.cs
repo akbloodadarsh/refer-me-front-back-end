@@ -22,7 +22,6 @@ async Task<UserCosmosDbService> InitializeUsersCosmosClientInstanceAsync(IConfig
     var secretClient = new SecretClient(vaultUri: new Uri("https://rg-refer-me-kv.vault.azure.net/"), credential: new DefaultAzureCredential());
     var secretKey = secretClient.GetSecret("ReferMeDB-Users-Key");
     var key = secretKey.Value.Value;
-    //var key = configurationSection["Key"];
     var client = new CosmosClient(account, key);
     var database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
     await database.Database.CreateContainerIfNotExistsAsync(containerName, "/id");
@@ -41,7 +40,6 @@ async Task<JobPostsCosmosDbService> InitializeJobPostsCosmosClientInstanceAsync(
     var secretKey = secretClient.GetSecret("ReferMeDB-JobPosts-Key");
     var key = secretKey.Value.Value;
 
-    //var key = configurationSection["Key"];
     var client = new CosmosClient(account, key);
     var database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
     await database.Database.CreateContainerIfNotExistsAsync(containerName, "/id");
@@ -50,6 +48,7 @@ async Task<JobPostsCosmosDbService> InitializeJobPostsCosmosClientInstanceAsync(
 }
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddCors(c =>
 {
     c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod()
@@ -71,7 +70,6 @@ builder.Services.AddAuthentication(
                     var secretClient = new SecretClient(vaultUri: new Uri("https://rg-refer-me-kv.vault.azure.net/"), credential: new DefaultAzureCredential());
                     var secretKey = secretClient.GetSecretAsync("JwtConfig-Key").Result;
                     var key = secretKey.Value.Value;
-                    //var key = builder.Configuration.GetValue<string>("JwtConfig:Key");
                     var keyBytes = Encoding.ASCII.GetBytes(key);
                     jwtOptions.SaveToken = true;
                     jwtOptions.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
@@ -132,10 +130,6 @@ builder.Services.AddScoped<IUserRepositories, UserRepository>();
 // Adding IJobPostsRepositories
 builder.Services.AddScoped<IJobPostsRepositories, JobPostsRepositories>();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 // Adding DBContext
 builder.Services.AddDbContext<ReferMeDBContext>();
 
@@ -156,8 +150,6 @@ app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 // Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI();
-
-app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

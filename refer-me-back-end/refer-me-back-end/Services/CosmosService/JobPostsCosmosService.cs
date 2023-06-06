@@ -17,7 +17,6 @@ namespace refer_me_back_end.Services.CosmosService
             Task CreateJobPostAsync(JobPost jobPost);
             Task UpdateJobPostAsync(JobPost jobPost);
             Task DeleteJobPostAsync(string user_id);
-            //Task<string> AuthenticateUserAsync(string user_name, string password);
         }
 
         public class JobPostsCosmosDbService : IJobPostsCosmosDbService
